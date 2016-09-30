@@ -1,0 +1,14 @@
+# Ordner
+/.settings/
+/Debug/
+/Documentation/
+/Generated_Code/
+
+# Dateien
+*.g_c
+*.g_x
+ProjectInfo.xml
+.cwGeneratedFileSetLog
+
+
+
