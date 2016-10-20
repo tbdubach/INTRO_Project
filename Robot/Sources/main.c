@@ -1,7 +1,7 @@
 /* ###################################################################
 **     Filename    : main.c
 **     Project     : INTRO_Robot_Master
-**     Processor   : MK22FX512VLQ12
+**     Processor   : MK22FX512VLK12
 **     Version     : Driver 01.01
 **     Compiler    : GNU C Compiler
 **     Date/Time   : 2016-09-20, 21:03, # CodeGen: 0
@@ -30,6 +30,19 @@
 /* Including needed modules to compile this module/procedure */
 #include "Cpu.h"
 #include "Events.h"
+#include "LEDPin1.h"
+#include "BitIoLdd1.h"
+#include "LEDPin2.h"
+#include "BitIoLdd2.h"
+#include "SW1.h"
+#include "BitIoLdd3.h"
+#include "AS1.h"
+#include "ASerialLdd3.h"
+#include "CLS1.h"
+#include "TU1.h"
+#include "TI1.h"
+#include "TimerIntLdd1.h"
+#include "RTT1.h"
 #include "WAIT1.h"
 #include "CS1.h"
 #include "HF1.h"
