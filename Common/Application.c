@@ -50,7 +50,6 @@ void APP_EventHandler(EVNT_Handle event) {
   case EVNT_LED_HEARTBEAT:
     LED1_Neg();
     break;
-
 #if PL_CONFIG_HAS_KEYS
   #if PL_CONFIG_NOF_KEYS>=1
   case EVNT_SW1_PRESSED:
@@ -182,21 +181,6 @@ void APP_Start(void) {
   /* does usually not return! */
 #else
   for(;;) {
-
-
-#if PL_CONFIG_NOF_LEDS>=1
-	  LED1_Neg();
-	  WAIT1_Waitms(100);
-#endif
-
-#if PL_CONFIG_NOF_LEDS>=2
-	  LED2_Neg();
-#endif
-
-#if PL_CONFIG_NOF_LEDS>=3
-	  LED3_Neg();
-#endif
-
 
 #if PL_CONFIG_HAS_KEYS
     KEY_Scan();

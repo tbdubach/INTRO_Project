@@ -28,6 +28,7 @@
 
 #include "Cpu.h"
 #include "Events.h"
+#include "Platform.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -73,6 +74,10 @@ void TI1_OnInterrupt(void)
   /* Write your code here ... */
 #if PL_CONFIG_HAS_TIMER
 	TMR_OnInterrupt();
+#endif
+
+#if PL_CONFIG_HAS_TRIGGER
+	TRG_AddTick();
 #endif
 }
 
