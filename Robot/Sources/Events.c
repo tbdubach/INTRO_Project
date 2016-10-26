@@ -75,9 +75,6 @@ void TI1_OnInterrupt(void)
 #if PL_CONFIG_HAS_TIMER
 	TMR_OnInterrupt();
 #endif
-#if PL_CONFIG_HAS_TRIGGER
-  TRG_AddTick();
-#endif
 }
 
 /* END Events */

@@ -13,6 +13,7 @@
 #include "WAIT1.h"
 #include "CS1.h"
 #include "Keys.h"
+#include "KeyDebounce.h"
 #include "KIN1.h"
 #if PL_CONFIG_HAS_SHELL
   #include "CLS1.h"
@@ -165,9 +166,9 @@ static void APP_AdoptToHardware(void) {
 
 void APP_Start(void) {
 #if PL_CONFIG_HAS_RTOS
-#if configUSE_TRACE_HOOKS
-  PTRC1_uiTraceStart();
-#endif
+	#if configUSE_TRACE_HOOKS
+	  PTRC1_uiTraceStart();
+	#endif
 #endif
   PL_Init();
 #if PL_CONFIG_HAS_EVENTS
@@ -178,28 +179,18 @@ void APP_Start(void) {
 #endif
   APP_AdoptToHardware();
 #if PL_CONFIG_HAS_RTOS
+  RTOS_Init();
   vTaskStartScheduler(); /* start the RTOS, create the IDLE task and run my tasks (if any) */
   /* does usually not return! */
 #else
   for(;;) {
 
-
-#if PL_CONFIG_NOF_LEDS>=1
-	  LED1_Neg();
-	  WAIT1_Waitms(100);
-#endif
-
-#if PL_CONFIG_NOF_LEDS>=2
-	  LED2_Neg();
-#endif
-
-#if PL_CONFIG_NOF_LEDS>=3
-	  LED3_Neg();
-#endif
-
-
 #if PL_CONFIG_HAS_KEYS
-    KEY_Scan();
+	#if PL_CONFIG_HAS_DEBOUNCE
+		 KEYDBNC_Process();
+	#else
+		KEY_Scan();
+	#endif
 #endif
 #if PL_CONFIG_HAS_EVENTS
     EVNT_HandleEvent(APP_EventHandler, TRUE);

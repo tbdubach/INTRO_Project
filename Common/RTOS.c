@@ -24,18 +24,35 @@ static void AppTask(void* param) {
       LED2_Neg();
     }
     /* \todo handle your application code here */
-    //FRTOS1_vTaskDelay(pdMS_TO_TICKS(500));
+
+    FRTOS1_vTaskDelay(pdMS_TO_TICKS(500));
   }
+}
+
+static void Task1(void* param) {
+  (void)param; /* avoid compiler warning */
+
+}
+
+static void Task2(void* param) {
+  (void)param; /* avoid compiler warning */
+
 }
 
 void RTOS_Init(void) {
   static const int led1 = 1;
   static const int led2 = 2;
 
-  EVNT_SetEvent(EVNT_STARTUP); /* set startup event */
+  // EVNT_SetEvent(EVNT_STARTUP); /* set startup event */
   /*! \todo Create tasks here */
   if (FRTOS1_xTaskCreate(AppTask, (signed portCHAR *)"App1", configMINIMAL_STACK_SIZE, (void*)&led1, tskIDLE_PRIORITY, NULL) != pdPASS) {
     for(;;){} /* error case only, stay here! */
+  }
+  if (FRTOS1_xTaskCreate(Task1, (signed portCHAR *)"Task1", configMINIMAL_STACK_SIZE, (void*)NULL, tskIDLE_PRIORITY, NULL) != pdPASS) {
+      for(;;){} /* error case only, stay here! */
+  }
+  if (FRTOS1_xTaskCreate(Task2, (signed portCHAR *)"Task2", configMINIMAL_STACK_SIZE, (void*)NULL, tskIDLE_PRIORITY, NULL) != pdPASS) {
+      for(;;){} /* error case only, stay here! */
   }
 }
 
