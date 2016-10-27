@@ -30,9 +30,11 @@
 /* Including needed modules to compile this module/procedure */
 #include "Cpu.h"
 #include "Events.h"
+#include "FRTOS1.h"
 #include "LEDPin1.h"
 #include "BitIoLdd17.h"
 #include "RTT1.h"
+#include "SYS1.h"
 #include "SW1.h"
 #include "BitIoLdd10.h"
 #include "SW2.h"
