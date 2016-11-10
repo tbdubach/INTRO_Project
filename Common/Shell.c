@@ -210,6 +210,7 @@ void SHELL_ParseCmd(unsigned char *cmd) {
   #if CLS1_DEFAULT_SERIAL
     (void)CLS1_ParseWithCommandTable(cmd, CLS1_GetStdio(), CmdParserTable);
   #endif
+
   /* \todo Extend as needed */
 }
 

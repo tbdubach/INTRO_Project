@@ -179,7 +179,6 @@ void APP_Start(void) {
 #endif
   APP_AdoptToHardware();
 #if PL_CONFIG_HAS_RTOS
-  RTOS_Init();
   vTaskStartScheduler(); /* start the RTOS, create the IDLE task and run my tasks (if any) */
   /* does usually not return! */
 #else
