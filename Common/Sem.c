@@ -33,9 +33,9 @@ static void vSlaveTask(void *pvParameters) {
   }
   for(;;) {
 	  if(FRTOS1_xSemaphoreTake(sem,50)){
-		  LED1_Neg();
+		  LED1_On();
 	  } else {
-	  	  LED2_Neg();
+	  	  LED1_Off();
 	  }
 	  vTaskDelay(500/portTICK_PERIOD_MS);
   }
