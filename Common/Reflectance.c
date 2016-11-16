@@ -39,6 +39,7 @@
 #if REF_START_STOP_CALIB
   static xSemaphoreHandle REF_StartStopSem = NULL;
 #endif
+  static xSemaphoreHandle REF_RawMeasure = NULL;
 
 typedef enum {
   REF_STATE_INIT,
@@ -140,16 +141,18 @@ static void REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS]) {
   uint8_t cnt; /* number of sensor */
   uint8_t i;
   RefCnt_TValueType timerVal;
-  /*! \todo Consider reentrancy and mutual exclusion! */
 
   LED_IR_On(); /* IR LED's on */
   WAIT1_Waitus(200);
+  FRTOS1_xSemaphoreTake(REF_RawMeasure,100);
+  CS1_CriticalVariable();
+  CS1_EnterCritical(); /* Bei Messwerte auslesen in CriticalSection oder Mutex */
   for(i=0;i<REF_NOF_SENSORS;i++) {
     SensorFctArray[i].SetOutput(); /* turn I/O line as output */
     SensorFctArray[i].SetVal(); /* put high */
     raw[i] = MAX_SENSOR_VALUE;
   }
-  WAIT1_Waitus(50); /* give at least 10 us to charge the capacitor */
+  WAIT1_Waitus(50); /* give at least 10 us to charge the capacitor */ /*! \todo Zeit optimieren */
   for(i=0;i<REF_NOF_SENSORS;i++) {
     SensorFctArray[i].SetInput(); /* turn I/O line as input */
   }
@@ -166,7 +169,9 @@ static void REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS]) {
         cnt++;
       }
     }
-  } while(cnt!=REF_NOF_SENSORS);
+  } while(cnt!=REF_NOF_SENSORS && timerVal<0x1FFF); /*! \todo Timeout festlegen*/
+  CS1_ExitCritical();	/* CriticalSection oder Mutex verlassen */
+  FRTOS1_xSemaphoreGive(REF_RawMeasure);
   LED_IR_Off(); /* IR LED's off */
 }
 
@@ -590,6 +595,12 @@ void REF_Init(void) {
   (void)FRTOS1_xSemaphoreTake(REF_StartStopSem, 0); /* empty token */
   FRTOS1_vQueueAddToRegistry(REF_StartStopSem, "RefStartStopSem");
 #endif
+  REF_RawMeasure = FRTOS1_xSemaphoreCreateMutex();
+  if (REF_RawMeasure==NULL) { /* semaphore creation failed */
+    for(;;){} /* error */
+  }
+  (void)FRTOS1_xSemaphoreGive(REF_RawMeasure); /* empty token */
+  FRTOS1_vQueueAddToRegistry(REF_RawMeasure, "RefRawMeasure");
   refState = REF_STATE_INIT;
   timerHandle = RefCnt_Init(NULL);
   /*! \todo You might need to adjust priority or other task settings */
