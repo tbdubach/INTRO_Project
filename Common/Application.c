@@ -124,8 +124,6 @@ void APP_EventHandler(EVNT_Handle event) {
     break;
   #endif
 #endif /* PL_CONFIG_HAS_KEYS */
-
-    /* \todo extend handler as needed */
    } /* switch */
 }
 #endif /* PL_CONFIG_HAS_EVENTS */

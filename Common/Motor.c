@@ -34,12 +34,10 @@ static uint8_t PWMRSetRatio16(uint16_t ratio) {
 }
 
 static void DirLPutVal(bool val) {
-  /*! \todo Check if directions are working properly with your hardware */
   DIRL_PutVal(val);
 }
 
 static void DirRPutVal(bool val) {
-  /*! \todo Check if directions are working properly with your hardware */
   DIRR_PutVal(val);
 }
 
@@ -132,6 +130,8 @@ static void MOT_PrintHelp(const CLS1_StdIOType *io) {
   CLS1_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows motor help or status\r\n", io->stdOut);
   CLS1_SendHelpStr((unsigned char*)"  (L|R) forward|backward", (unsigned char*)"Change motor direction\r\n", io->stdOut);
   CLS1_SendHelpStr((unsigned char*)"  (L|R) duty <number>", (unsigned char*)"Change motor PWM (-100..+100)%\r\n", io->stdOut);
+  CLS1_SendHelpStr((unsigned char*)"  run", (unsigned char*)"Start Motors\r\n", io->stdOut);
+  CLS1_SendHelpStr((unsigned char*)"  stop", (unsigned char*)"Stop Motors\r\n", io->stdOut);
 }
 
 static void MOT_PrintStatus(const CLS1_StdIOType *io) {
@@ -199,6 +199,16 @@ uint8_t MOT_ParseCommand(const unsigned char *cmd, bool *handled, const CLS1_Std
       CLS1_SendStr((unsigned char*)"Wrong argument, must be in the range -100..100\r\n", io->stdErr);
       res = ERR_FAILED;
     }
+  } else if (UTIL1_strcmp((char*)cmd, (char*)"motor run")==0) {
+	  MOT_SetSpeedPercent(&motorR, (MOT_SpeedPercent)50);
+	  MOT_SetSpeedPercent(&motorL, (MOT_SpeedPercent)50);
+	  CLS1_SendStr((unsigned char*)"Motor started\r\n", io->stdOut);
+      *handled = TRUE;
+  } else if (UTIL1_strcmp((char*)cmd, (char*)"motor stop")==0) {
+	  MOT_SetSpeedPercent(&motorR, (MOT_SpeedPercent)0);
+	  MOT_SetSpeedPercent(&motorL, (MOT_SpeedPercent)0);
+	  CLS1_SendStr((unsigned char*)"Motor stopped\r\n", io->stdOut);
+	  *handled = TRUE;
   }
   return res;
 }
