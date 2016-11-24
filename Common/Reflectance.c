@@ -145,8 +145,8 @@ static void REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS]) {
   LED_IR_On(); /* IR LED's on */
   WAIT1_Waitus(200);
   FRTOS1_xSemaphoreTake(REF_RawMeasure,100);
-  CS1_CriticalVariable();
-  CS1_EnterCritical(); /* Bei Messwerte auslesen in CriticalSection oder Mutex */
+ // CS1_CriticalVariable();
+ // CS1_EnterCritical(); /* Bei Messwerte auslesen in CriticalSection oder Mutex */
   for(i=0;i<REF_NOF_SENSORS;i++) {
     SensorFctArray[i].SetOutput(); /* turn I/O line as output */
     SensorFctArray[i].SetVal(); /* put high */
@@ -169,8 +169,8 @@ static void REF_MeasureRaw(SensorTimeType raw[REF_NOF_SENSORS]) {
         cnt++;
       }
     }
-  } while(cnt!=REF_NOF_SENSORS && timerVal<0x1FFF); /*! \todo Timeout festlegen*/
-  CS1_ExitCritical();	/* CriticalSection oder Mutex verlassen */
+  } while(cnt!=REF_NOF_SENSORS && timerVal<14000); /*! \todo Timeout festlegen*/
+ // CS1_ExitCritical();	/* CriticalSection oder Mutex verlassen */
   FRTOS1_xSemaphoreGive(REF_RawMeasure);
   LED_IR_Off(); /* IR LED's off */
 }
