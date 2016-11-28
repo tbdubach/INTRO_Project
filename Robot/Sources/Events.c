@@ -123,6 +123,9 @@ void FRTOS1_vApplicationTickHook(void)
 #if PL_CONFIG_HAS_TIMER
 	TMR_OnInterrupt();
 #endif
+#if PL_CONFIG_HAS_MOTOR_TACHO
+	TACHO_Sample();
+#endif
 }
 
 /*
@@ -188,9 +191,6 @@ void QuadInt_OnInterrupt(void)
 #ifdef PL_CONFIG_HAS_QUADRATURE
 	Q4CLeft_Sample();
 	Q4CRight_Sample();
-#endif
-#ifdef PL_CONFIG_HAS_MOTOR_TACHO
-	TACHO_Sample();
 #endif
 }
 
