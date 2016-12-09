@@ -94,14 +94,26 @@ static void StateMachine(void) {
     #if PL_CONFIG_HAS_LINE_MAZE
         LF_currState = STATE_TURN; /* make turn */
         SHELL_SendString((unsigned char*)"no line, turn..\r\n");
+        if(REF_LINE_FULL==REF_GetLineKind()){
+        	LF_currState = STATE_FINISHED; /* make turn */
+        	//SHELL_SendString((unsigned char*)"no line, turn..\r\n");
+        }
+        if(REF_LINE_NONE==REF_GetLineKind()){
+        	LF_currState = STATE_TURN; /* make turn */
+        	SHELL_SendString((unsigned char*)"no line, turn..\r\n");
+        }
     #else
-        LF_currState = STATE_STOP; /* stop if we do not have a line any more */
-        SHELL_SendString((unsigned char*)"No line, stopped!\r\n");
+        LF_currState = STATE_TURN; /* stop if we do not have a line any more */
+        //SHELL_SendString((unsigned char*)"No line, stopped!\r\n");
     #endif
       }
       break;
 
     case STATE_TURN:
+    	TURN_Turn(TURN_RIGHT180, NULL);
+    	while(!DRV_HasTurned());
+    	DRV_SetMode(DRV_MODE_NONE);
+    	LF_currState = STATE_FOLLOW_SEGMENT;
       #if PL_CONFIG_HAS_LINE_MAZE
       /*! \todo Handle maze turning */
       #endif /* PL_CONFIG_HAS_LINE_MAZE */
@@ -109,7 +121,7 @@ static void StateMachine(void) {
 
     case STATE_FINISHED:
       #if PL_CONFIG_HAS_LINE_MAZE
-      /*! \todo Handle maze finished */
+    	DRV_SetMode(DRV_MODE_STOP);
       #endif /* PL_CONFIG_HAS_LINE_MAZE */
       break;
     case STATE_STOP:
@@ -131,6 +143,7 @@ static void LineTask (void *pvParameters) {
 
   (void)pvParameters; /* not used */
   for(;;) {
+
     (void)xTaskNotifyWait(0UL, LF_START_FOLLOWING|LF_STOP_FOLLOWING, &notifcationValue, 0); /* check flags */
     if (notifcationValue&LF_START_FOLLOWING) {
       DRV_SetMode(DRV_MODE_NONE); /* disable any drive mode */
