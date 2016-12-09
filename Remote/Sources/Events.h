@@ -34,6 +34,14 @@
 #include "PE_Const.h"
 #include "IO_Map.h"
 #include "FRTOS1.h"
+#include "RNET1.h"
+#include "RF1.h"
+#include "CE1.h"
+#include "BitIoLdd1.h"
+#include "CSN1.h"
+#include "BitIoLdd2.h"
+#include "SM1.h"
+#include "SMasterLdd1.h"
 #include "LEDPin1.h"
 #include "BitIoLdd17.h"
 #include "RTT1.h"
@@ -105,7 +113,7 @@ void Cpu_OnNMIINT(void);
 */
 void TI1_OnInterrupt(void);
 
-void FRTOS1_vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName);
+void FRTOS1_vApplicationStackOverflowHook(xTaskHandle pxTask, char *pcTaskName);
 /*
 ** ===================================================================
 **     Event       :  FRTOS1_vApplicationStackOverflowHook (module Events)
