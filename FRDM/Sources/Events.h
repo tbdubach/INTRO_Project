@@ -71,6 +71,11 @@
 #include "IFsh1.h"
 #include "IntFlashLdd1.h"
 #include "FRTOS1.h"
+#include "USB1.h"
+#include "CDC1.h"
+#include "Tx1.h"
+#include "Rx1.h"
+#include "USB0.h"
 #include "WAIT1.h"
 #include "CS1.h"
 #include "HF1.h"
@@ -114,7 +119,7 @@ void Cpu_OnNMIINT(void);
 */
 void TI1_OnInterrupt(void);
 
-void FRTOS1_vApplicationStackOverflowHook(xTaskHandle pxTask, char *pcTaskName);
+void FRTOS1_vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName);
 /*
 ** ===================================================================
 **     Event       :  FRTOS1_vApplicationStackOverflowHook (module Events)
