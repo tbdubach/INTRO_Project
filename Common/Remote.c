@@ -13,6 +13,15 @@
 #include "CLS1.h"
 #include "UTIL1.h"
 #include "Shell.h"
+#if PL_LOCAL_CONFIG_BOARD_IS_REMOTE
+#include "SW1.h"
+#include "SW2.h"
+#include "SW3.h"
+#include "SW4.h"
+#include "SW5.h"
+#include "SW6.h"
+#include "SW7.h"
+#endif
 #if PL_CONFIG_HAS_PID
   #include "PID.h"
 #endif
@@ -29,14 +38,14 @@
 #if PL_CONFIG_HAS_LEDS
   #include "LED.h"
 #endif
-#if PL_CONFIG_HAS_JOYSTICK
+#if PL_CONFIG_HAS_JOYSTICK && PL_LOCAL_CONFIG_BOARD_IS_FRDM
   #include "AD1.h"
 #endif
 #if PL_CONFIG_HAS_SHELL
   #include "Shell.h"
 #endif
 
-static bool REMOTE_isOn = FALSE;
+static bool REMOTE_isOn = TRUE;
 static bool REMOTE_isVerbose = FALSE;
 static bool REMOTE_useJoystick = TRUE;
 #if PL_CONFIG_HAS_JOYSTICK
@@ -44,7 +53,7 @@ static uint16_t midPointX, midPointY;
 #endif
 
 #if (PL_CONFIG_CONTROL_SENDER)
-#if (PL_CONFIG_HAS_JOYSTICK)
+
 static int8_t ToSigned8Bit(uint16_t val, bool isX) {
   int32_t tmp;
 
@@ -70,7 +79,7 @@ static int8_t ToSigned8Bit(uint16_t val, bool isX) {
 static uint8_t REMOTE_GetXY(uint16_t *x, uint16_t *y, int8_t *x8, int8_t *y8) {
   uint8_t res;
   uint16_t values[2];
-
+#if	PL_LOCAL_CONFIG_BOARD_IS_FRDM
   res = AD1_Measure(TRUE);
   if (res!=ERR_OK) {
     return res;
@@ -92,27 +101,64 @@ static uint8_t REMOTE_GetXY(uint16_t *x, uint16_t *y, int8_t *x8, int8_t *y8) {
   if (y8!=NULL) {
     *y8 = ToSigned8Bit(values[1], FALSE);
   }
+#endif
   return ERR_OK;
 }
-#endif
+
+
 static void RemoteTask (void *pvParameters) {
   (void)pvParameters;
+  char sw;
 #if PL_CONFIG_HAS_JOYSTICK
   (void)REMOTE_GetXY(&midPointX, &midPointY, NULL, NULL);
 #endif
   FRTOS1_vTaskDelay(1000/portTICK_PERIOD_MS);
   for(;;) {
     if (REMOTE_isOn) {
-#if PL_CONFIG_HAS_JOYSTICK
+#if PL_CONFIG_HAS_JOYSTICK || PL_LOCAL_CONFIG_BOARD_IS_REMOTE
       if (REMOTE_useJoystick) {
         uint8_t buf[2];
         int16_t x, y;
         int8_t x8, y8;
-
+#if	PL_LOCAL_CONFIG_BOARD_IS_FRDM
         /* send periodically messages */
         REMOTE_GetXY(&x, &y, &x8, &y8);
         buf[0] = x8;
         buf[1] = y8;
+#else
+        if(!SW1_GetVal()){
+        	buf[0]=30;
+        	buf[1]=0;
+        }
+        else if (!SW2_GetVal()){
+        	buf[0]=-30;
+        	buf[1]=0;
+        }
+        else if (!SW3_GetVal()){
+            buf[0]=0;
+            buf[1]=-30;
+        }
+        else if (!SW5_GetVal()){
+            buf[0]=0;
+            buf[1]=30;
+        }
+        else if (!SW4_GetVal()){
+        	sw = 'G';
+        	(void)RAPP_SendPayloadDataBlock(&sw, sizeof(sw), RAPP_MSG_TYPE_JOYSTICK_BTN, RNETA_GetDestAddr(), RPHY_PACKET_FLAGS_REQ_ACK);
+
+        }
+        else if (!SW7_GetVal()){
+        	sw = 'C';
+        	(void)RAPP_SendPayloadDataBlock(&sw, sizeof(sw), RAPP_MSG_TYPE_JOYSTICK_BTN, RNETA_GetDestAddr(), RPHY_PACKET_FLAGS_REQ_ACK);
+        }
+        else {
+        	buf[0]=0;
+        	buf[1]=0;
+        	 CLS1_SendStr("Nothing pressed\r\n", CLS1_GetStdio()->stdOut);
+        }
+#endif
+
+
         if (REMOTE_isVerbose) {
           uint8_t txtBuf[48];
 
