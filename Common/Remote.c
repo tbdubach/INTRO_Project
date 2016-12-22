@@ -351,8 +351,8 @@ uint8_t REMOTE_HandleRemoteRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *
         	}
       } else if (val=='C') { /* red 'C' button */
     	  LF_StartStopFollowing();
-    	  if(!aSended){
-    	          		aSended = true;
+    	  if(!bSended){
+    	          		bSended = true;
     	          		msg[0] = 0x15;
     	          		msg[1] = 'B';
     	          		SHELL_SendString("Send data A (start)\r \n");
