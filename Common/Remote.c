@@ -279,7 +279,11 @@ uint8_t REMOTE_HandleRemoteRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *
 #endif
   uint8_t val;
   int16_t x, y, z;
-  
+
+  bool aSended;
+  bool bSended;
+  bool cSended;
+  uint16_t msg[2];
   (void)size;
   (void)packet;
   switch(type) {
@@ -327,6 +331,7 @@ uint8_t REMOTE_HandleRemoteRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *
       *handled = TRUE;
       val = *data; /* get data value */
 #if PL_CONFIG_HAS_SHELL && PL_CONFIG_HAS_BUZZER && PL_CONFIG_HAS_REMOTE
+
       if (val=='F') { /* F button, disable remote */
         SHELL_ParseCmd((unsigned char*)"buzzer buz 300 500");
         REMOTE_SetOnOff(FALSE);
@@ -337,8 +342,21 @@ uint8_t REMOTE_HandleRemoteRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *
         REMOTE_SetOnOff(TRUE);
         DRV_SetMode(DRV_MODE_SPEED);
         SHELL_SendString("Remote ON\r\n");
+    	if(!aSended){
+        		aSended = true;
+        		msg[0] = 0x15;
+        		msg[1] = 'A';
+        		SHELL_SendString("Send data A (start)\r \n");
+        		(void)RAPP_SendPayloadDataBlock(msg, sizeof(msg), 0xAC, 0x12, RPHY_PACKET_FLAGS_REQ_ACK);
+        	}
       } else if (val=='C') { /* red 'C' button */
     	  LF_StartStopFollowing();
+    	  if(!aSended){
+    	          		aSended = true;
+    	          		msg[0] = 0x15;
+    	          		msg[1] = 'B';
+    	          		SHELL_SendString("Send data A (start)\r \n");
+    	          		(void)RAPP_SendPayloadDataBlock(msg, sizeof(msg), 0xAC, 0x12, RPHY_PACKET_FLAGS_REQ_ACK);
       } else if (val=='A') { /* green 'A' button */
         /*! \todo add functionality */
       }

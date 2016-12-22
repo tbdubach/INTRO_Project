@@ -9,7 +9,7 @@
 
 /* include shared header files */
 #include <stdint.h> /* types as uint8_t used in project */
-#if !PL_LOCAL_CONFIG_BOARD_IS_REMOTE
+#if PL_LOCAL_CONFIG_BOARD_IS_REMOTE
 #include <stdbool.h> /* for bool type */
 #endif
 #include "PE_Types.h" /* common Processor Expert types: bool, NULL, ... */
