@@ -23,7 +23,7 @@
 
 /* status variables */
 static bool LedBackLightisOn = TRUE;
-static bool requestLCDUpdate = FALSE;
+static bool requestLCDUpdate = TRUE;
 
 #if PL_CONFIG_HAS_LCD_MENU
 typedef enum {

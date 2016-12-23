@@ -30,6 +30,9 @@
 #if PL_CONFIG_HAS_LINE_MAZE
   #include "Maze.h"
 #endif
+#if PL_CONFIG_HAS_REMOTE
+  #include "RApp.h"
+#endif
 
 typedef enum {
   STATE_IDLE,              /* idle, not doing anything */
@@ -86,6 +89,8 @@ static bool FollowSegment(void) {
 }
 
 static void StateMachine(void) {
+  static bool cSended;
+  static uint16_t msg[2];
   switch (LF_currState) {
     case STATE_IDLE:
       break;
@@ -123,6 +128,13 @@ static void StateMachine(void) {
       #if PL_CONFIG_HAS_LINE_MAZE
     	DRV_SetMode(DRV_MODE_STOP);
       #endif /* PL_CONFIG_HAS_LINE_MAZE */
+    	if(!cSended){
+    		cSended = true;
+    	    msg[0] = 0x15;
+    	    msg[1] = 'C';
+    	    SHELL_SendString("Send data A (start)\r \n");
+    	    (void)RAPP_SendPayloadDataBlock(msg, sizeof(msg), 0xAC, 0x12, RPHY_PACKET_FLAGS_REQ_ACK);
+    	}
       break;
     case STATE_STOP:
       SHELL_SendString("Stopped!\r\n");

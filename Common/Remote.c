@@ -280,10 +280,9 @@ uint8_t REMOTE_HandleRemoteRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *
   uint8_t val;
   int16_t x, y, z;
 
-  bool aSended;
-  bool bSended;
-  bool cSended;
-  uint16_t msg[2];
+  static bool aSended;
+  static bool bSended;
+  static uint16_t msg[2];
   (void)size;
   (void)packet;
   switch(type) {
@@ -352,14 +351,22 @@ uint8_t REMOTE_HandleRemoteRxMessage(RAPP_MSG_Type type, uint8_t size, uint8_t *
       } else if (val=='C') { /* red 'C' button */
     	  LF_StartStopFollowing();
     	  if(!bSended){
-    	          		bSended = true;
-    	          		msg[0] = 0x15;
-    	          		msg[1] = 'B';
-    	          		SHELL_SendString("Send data A (start)\r \n");
-    	          		(void)RAPP_SendPayloadDataBlock(msg, sizeof(msg), 0xAC, 0x12, RPHY_PACKET_FLAGS_REQ_ACK);
+    	         bSended = true;
+    	        msg[0] = 0x15;
+    	        msg[1] = 'B';
+    	        SHELL_SendString("Send data A (start)\r \n");
+    	       (void)RAPP_SendPayloadDataBlock(msg, sizeof(msg), 0xAC, 0x12, RPHY_PACKET_FLAGS_REQ_ACK);
+    	  }
       } else if (val=='A') { /* green 'A' button */
         /*! \todo add functionality */
+      } else if (val=='YL') { /* green 'A' button */
+    	  DRV_SetSpeed(30,0);
+      } else if (val=='YR') { /* green 'A' button */
+    	  DRV_SetSpeed(0,30);
+      } else if (val=='Z') { /* green 'A' button */
+    	  DRV_SetSpeed(0,0);
       }
+          /*! \todo add functionality */
 #else
       *handled = FALSE; /* no shell and no buzzer? */
 #endif
